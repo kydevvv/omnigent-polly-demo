@@ -26,3 +26,5 @@ python -m pytest        # run the test suite
 
 The four work items in `ISSUES.md` are deliberately independent so they
 can be implemented in parallel and reviewed cross-vendor.
+
+# smoke test (delete me)
