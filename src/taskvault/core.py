@@ -63,6 +63,22 @@ class TaskVault:
         return [t for t in self._tasks if not t.done]
 
 
+def search_tasks(tasks: list[Task], query: str) -> list[Task]:
+    """Return the tasks whose title or description contains ``query``.
+
+    The match is a case-insensitive substring test against both the
+    ``title`` and the ``description``; a task is included if either field
+    matches. Input order is preserved, and an empty query returns every
+    task.
+    """
+    needle = query.casefold()
+    return [
+        t
+        for t in tasks
+        if needle in t.title.casefold() or needle in t.description.casefold()
+    ]
+
+
 def sort_by_due_date(tasks: list[Task]) -> list[Task]:
     """Return tasks sorted by due date, soonest first.
 
