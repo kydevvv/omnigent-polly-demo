@@ -7,11 +7,16 @@ work items.
 
 from __future__ import annotations
 
+import csv
+import os
 from dataclasses import dataclass, field
 from datetime import date
 from typing import Optional
 
 VALID_PRIORITIES = ("low", "medium", "high")
+
+#: Column order for :func:`export_to_csv`, also used as the header row.
+CSV_COLUMNS = ("id", "title", "priority", "due", "done")
 
 
 @dataclass
@@ -73,3 +78,34 @@ def sort_by_due_date(tasks: list[Task]) -> list[Task]:
     # BUG: reverse=True sorts latest-first, and undated tasks (sorted as
     # date.max) end up first instead of last.
     return sorted(tasks, key=lambda t: t.due or date.max, reverse=True)
+
+
+def export_to_csv(tasks: list[Task], path: str | os.PathLike[str]) -> None:
+    """Write ``tasks`` to ``path`` as CSV, with a header row.
+
+    Columns are written in the order given by :data:`CSV_COLUMNS`:
+    ``id,title,priority,due,done``.
+
+    Serialization contract:
+
+    * ``due`` is ``date.isoformat()`` (``YYYY-MM-DD``) when set, and the
+      empty string when it is ``None``.
+    * ``done`` is written as ``True`` / ``False`` — the default rendering
+      of Python's ``bool`` via the :mod:`csv` module's ``str()`` coercion.
+
+    The file is opened with ``newline=""`` as the :mod:`csv` docs require,
+    so no spurious blank rows appear on any platform.
+    """
+    with open(path, "w", newline="", encoding="utf-8") as fh:
+        writer = csv.writer(fh)
+        writer.writerow(CSV_COLUMNS)
+        for t in tasks:
+            writer.writerow(
+                [
+                    t.id,
+                    t.title,
+                    t.priority,
+                    t.due.isoformat() if t.due is not None else "",
+                    t.done,
+                ]
+            )
