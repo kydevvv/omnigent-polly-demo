@@ -38,6 +38,12 @@ class TaskVault:
         priority: str = "medium",
         due: Optional[date] = None,
     ) -> Task:
+        if priority not in VALID_PRIORITIES:
+            allowed = ", ".join(VALID_PRIORITIES)
+            raise ValueError(
+                f"invalid priority {priority!r}; allowed values are: {allowed}"
+            )
+
         task = Task(
             id=self._next_id,
             title=title,
