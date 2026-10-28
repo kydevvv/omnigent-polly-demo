@@ -73,3 +73,16 @@ def sort_by_due_date(tasks: list[Task]) -> list[Task]:
     # BUG: reverse=True sorts latest-first, and undated tasks (sorted as
     # date.max) end up first instead of last.
     return sorted(tasks, key=lambda t: t.due or date.max, reverse=True)
+
+
+def search_tasks(tasks: list[Task], query: str) -> list[Task]:
+    """Return tasks whose title or description contains ``query``.
+
+    Matching is a case-insensitive substring match. Input order is
+    preserved, and an empty query returns every task.
+    """
+    needle = query.lower()
+    return [
+        t for t in tasks
+        if needle in t.title.lower() or needle in t.description.lower()
+    ]
