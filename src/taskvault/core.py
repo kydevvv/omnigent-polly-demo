@@ -7,6 +7,7 @@ work items.
 
 from __future__ import annotations
 
+import csv
 from dataclasses import dataclass, field
 from datetime import date
 from typing import Optional
@@ -73,3 +74,20 @@ def sort_by_due_date(tasks: list[Task]) -> list[Task]:
     # BUG: reverse=True sorts latest-first, and undated tasks (sorted as
     # date.max) end up first instead of last.
     return sorted(tasks, key=lambda t: t.due or date.max, reverse=True)
+
+
+def export_to_csv(tasks: list[Task], path: str) -> None:
+    """Write tasks to a CSV file at path."""
+    with open(path, "w", newline="", encoding="utf-8") as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerow(["id", "title", "priority", "due", "done"])
+        for task in tasks:
+            writer.writerow(
+                [
+                    task.id,
+                    task.title,
+                    task.priority,
+                    task.due.isoformat() if task.due is not None else "",
+                    task.done,
+                ]
+            )
