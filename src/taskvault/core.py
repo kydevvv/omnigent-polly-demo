@@ -68,8 +68,5 @@ def sort_by_due_date(tasks: list[Task]) -> list[Task]:
 
     Tasks without a due date should sort AFTER all dated tasks.
 
-    NOTE: this currently has a bug — see ISSUES.md issue #2.
     """
-    # BUG: reverse=True sorts latest-first, and undated tasks (sorted as
-    # date.max) end up first instead of last.
-    return sorted(tasks, key=lambda t: t.due or date.max, reverse=True)
+    return sorted(tasks, key=lambda t: (t.due is None, t.due or date.max))
